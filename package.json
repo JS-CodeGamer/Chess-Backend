@@ -1,0 +1,20 @@
+{
+  "name": "chess-backend",
+  "version": "0.0.1",
+  "description": "Backend including websockets and authentication for chess game",
+  "main": "index.js",
+  "author": "JS-CodeGamer",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22",
+    "redis": "^4.6.7",
+    "uuid": "^9.0.0",
+    "ws": "^8.13.0"
+  }
+}

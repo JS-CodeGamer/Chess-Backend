@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WS Trial</title>
+  </head>
+  <body>
+    <input type="text" class="input" name="ws-message" id="ws-message" />
+    <button class="button" onclick="sendMessage()">Send message</button>
+  </body>
+  <script>
+    const socket = new WebSocket("ws://localhost:3000");
+
+    socket.addEventListener("open", function (event) {
+      console.log("Websocket connection opened");
+      socket.send("connected");
+    });
+
+    socket.addEventListener("close", function (event) {
+      console.log("Websocket connection closed");
+    });
+
+    socket.addEventListener("message", function (event) {
+      console.log("recieved message:", event.data);
+    });
+
+    function sendMessage() {
+      const input = document.getElementById("ws-message");
+      socket.send({ message: input.value });
+    }
+  </script>
+</html>
