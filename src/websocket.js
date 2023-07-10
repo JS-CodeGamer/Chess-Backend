@@ -1,6 +1,3 @@
-const jwt = require("jsonwebtoken");
-const ws = require("ws");
-
 const room = require("./room");
 
 async function handleConnection(client, req, server) {
@@ -10,10 +7,10 @@ async function handleConnection(client, req, server) {
   });
 
   try {
-    await room.join(req.url.searchParams.get("role"));
+    await room.join(req.url.searchParams.get("role") || "spectator");
   } catch (err) {
     client.on("open", () => {
-      client.send({ error: err.message });
+      client.send(JSON.stringify({ error: err.message }));
       client.close();
     });
   }
@@ -22,29 +19,35 @@ async function handleConnection(client, req, server) {
   client.is_creator = (await client.room.creator) === req.user.username;
 
   client.on("open", async () => {
-    client.send({ info: "connected" });
+    client.send(JSON.stringify({ info: "connected" }));
     await client.room.join(server);
   });
 
   client.on("close", async () => {
-    client.send({ info: "closing connection" });
+    client.send(JSON.stringify({ info: "closing connection" }));
     await room.model.leave(client.room, req.user);
   });
 
   client.on("message", async (message) => {
+    message = JSON.parse(message.toString());
+
     if (message.chat) {
-      server.clients.forEach((client) => {
-        client.send({ chat: message.chat });
+      server.clients.forEach((c) => {
+        if (c.room.id === client.room.id)
+          c.send(JSON.stringify({ chat: message.chat }));
       });
     } else if (message.move && client.is_player) {
-      server.clients.forEach((client) => {
-        client.send({
-          move: message.move,
-          played_by: req.user.username,
-        });
+      server.clients.forEach((c) => {
+        if (c.room.id === client.room.id)
+          c.send(
+            JSON.stringify({
+              move: message.move,
+              played_by: req.user.username,
+            })
+          );
       });
     } else {
-      client.send({ error: "invalid action" });
+      client.send(JSON.stringify({ error: "invalid action" }));
     }
   });
 }

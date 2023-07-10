@@ -6,28 +6,51 @@
     <title>WS Trial</title>
   </head>
   <body>
-    <input type="text" class="input" name="ws-message" id="ws-message" />
-    <button class="button" onclick="sendMessage()">Send message</button>
+    <div>
+      <label for="ws-token">Enter token:</label>
+      <input type="text" class="input" name="ws-url" id="ws-token" />
+
+      <label for="ws-room_id">Room Id:</label>
+      <input type="text" class="input" name="ws-url" id="ws-room_id" />
+
+      <label for="ws-role">Role:</label>
+      <input type="text" class="input" name="ws-url" id="ws-role" />
+
+      <button class="button" onclick="connect()">Connect</button>
+    </div>
+    <div>
+      <label for="ws-message">Message:</label>
+      <input type="text" class="input" name="ws-message" id="ws-message" />
+      <button class="button" onclick="sendMessage()">Send message</button>
+    </div>
   </body>
   <script>
-    const socket = new WebSocket("ws://localhost:3000");
+    let socket;
+    const input = (item) => document.getElementById(`ws-${item}`);
 
-    socket.addEventListener("open", function (event) {
-      console.log("Websocket connection opened");
-      socket.send("connected");
-    });
+    function connect() {
+      socket = new WebSocket(
+        `ws://localhost:3000/?token=${input("token").value}&room_id=${
+          input("room_id").value
+        }&role=${input("role").value}`
+      );
 
-    socket.addEventListener("close", function (event) {
-      console.log("Websocket connection closed");
-    });
+      socket.addEventListener("open", function (event) {
+        console.log("Websocket connection opened");
+        socket.send("connected");
+      });
 
-    socket.addEventListener("message", function (event) {
-      console.log("recieved message:", event.data);
-    });
+      socket.addEventListener("close", function (event) {
+        console.log("Websocket connection closed");
+      });
+
+      socket.addEventListener("message", function (event) {
+        console.log("recieved message:", event.data);
+      });
+    }
 
     function sendMessage() {
-      const input = document.getElementById("ws-message");
-      socket.send({ message: input.value });
+      socket.send(JSON.stringify({ chat: input("message").value }));
     }
   </script>
 </html>

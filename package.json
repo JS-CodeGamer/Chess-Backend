@@ -6,11 +6,12 @@
   "author": "JS-CodeGamer",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon src/index.js"
   },
   "dependencies": {
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.1",
     "nodemon": "^2.0.22",

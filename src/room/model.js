@@ -1,6 +1,6 @@
 const uuid = require("uuid");
 
-const db = require("../databases/redis");
+const db = require("../../databases/redis");
 
 class Room {
   constructor({ user, server, id = null }) {
@@ -13,24 +13,26 @@ class Room {
     await db
       .multi()
       .set(`room:${this._id}`, true)
-      .set(`room:${this._id}:creator`, await this.user.username)
+      .set(`room:${this._id}:creator`, this.user.username)
       .set(`room:${this._id}:created_at`, Date.now())
-      .sAdd(`room:${this._id}:participants`, await this.user.username)
-      .sAdd(`room:${this._id}:players`, await this.user.username)
+      .sAdd(`room:${this._id}:participants`, this.user.username)
+      .sAdd(`room:${this._id}:players`, this.user.username)
       .exec();
   }
 
   async join(role) {
     if (role === "player")
       if (db.sCard(`room:${this._id}:players`) === 1)
-        await db.sAdd(`room:${this._id}:players`, await this.user.username);
+        await db.sAdd(`room:${this._id}:players`, this.user.username);
       else throw Error("room is full, please join as a spectator");
-    await db.sAdd(`room:${this._id}:participants`, await this.user.username);
+    await db.sAdd(`room:${this._id}:participants`, this.user.username);
+
+    this.user.join(this._id);
   }
 
   async leave() {
-    await db.sRem(`room:${this._id}:participants`, await this.user.username);
-    await db.sRem(`room:${this._id}:players`, await this.user.username);
+    await db.sRem(`room:${this._id}:participants`, this.user.username);
+    await db.sRem(`room:${this._id}:players`, this.user.username);
   }
 
   get id() {
@@ -68,7 +70,7 @@ class Room {
   }
 
   async destroy() {
-    if (this.creator() === (await this.user.username)) {
+    if (this.creator() === this.user.username) {
       await db
         .multi()
         .del(`room:${this._id}`)

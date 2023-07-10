@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WS Trial</title>
+  </head>
+  <body>
+    <input>
+      <input type="radio">Register</input>
+      <input type="radio">Sign In</input>
+      <input type="radio">Create Room</input>
+      <input type="radio">Interact With Websocket</input>
+    </form>
+    <div class="container">
+      <b>Register</b>
+      <form action="/register" method="post">
+        <input type="text" class="input" name="username" id="ws-message" />
+        <input type="text" class="input" name="password" id="ws-message" />
+        <input
+          type="text"
+          class="input"
+          name="confirm_password"
+          id="ws-message"
+        />
+        <button class="button" type="submit" onclick="submit('register')">
+          Send message
+        </button>
+      </form>
+      <div class="response-reg"></div>
+    </div>
+
+    <div class="container">
+      <b>Register</b>
+      <form action="/register" method="post">
+        <input type="text" class="input" name="username" id="ws-message" />
+        <input type="text" class="input" name="password" id="ws-message" />
+        <input
+          type="text"
+          class="input"
+          name="confirm_password"
+          id="ws-message"
+        />
+        <button class="button" type="submit" onclick="submit('register')">
+          Send message
+        </button>
+      </form>
+      <div class="response-reg"></div>
+    </div>
+
+    <div class="container">
+      <b>Register</b>
+      <form action="/register" method="post">
+        <input type="text" class="input" name="username" id="ws-message" />
+        <input type="text" class="input" name="password" id="ws-message" />
+        <input
+          type="text"
+          class="input"
+          name="confirm_password"
+          id="ws-message"
+        />
+        <button class="button" type="submit" onclick="submit('register')">
+          Send message
+        </button>
+      </form>
+      <div class="response-reg"></div>
+    </div>
+
+    <div class="container">
+      <b>Register</b>
+      <form action="/register" method="post">
+        <input type="text" class="input" name="username" id="ws-message" />
+        <input type="text" class="input" name="password" id="ws-message" />
+        <input
+          type="text"
+          class="input"
+          name="confirm_password"
+          id="ws-message"
+        />
+        <button class="button" type="submit" onclick="submit('register')">
+          Send message
+        </button>
+      </form>
+      <div class="response-reg"></div>
+    </div>
+  </body>
+  <script>
+    const socket = new WebSocket("ws://localhost:3000");
+
+    socket.addEventListener("open", function (event) {
+      console.log("Websocket connection opened");
+      socket.send("connected");
+    });
+
+    socket.addEventListener("close", function (event) {
+      console.log("Websocket connection closed");
+    });
+
+    socket.addEventListener("message", function (event) {
+      console.log("recieved message:", event.data);
+    });
+
+    function sendMessage() {
+      const input = document.getElementById("ws-message");
+      socket.send({ message: input.value });
+    }
+  </script>
+</html>
