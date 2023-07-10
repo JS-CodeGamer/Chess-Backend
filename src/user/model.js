@@ -11,7 +11,8 @@ class User {
   }
 
   async exists() {
-    return await db.keys(`user:${this.username}*`);
+    const res = await db.keys(`user:${this.username}*`);
+    return res.length > 0;
   }
 
   get username() {
