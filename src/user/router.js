@@ -50,6 +50,9 @@ router.use(async (req, res, next) => {
   req.user = await new model({
     token: req.headers.authorization && req.headers.authorization.split(" ")[1],
   }).authenticate();
+  if (req.user.username === null) {
+    return res.status(401).json({ error: "user is not logged in" });
+  }
   next();
 });
 

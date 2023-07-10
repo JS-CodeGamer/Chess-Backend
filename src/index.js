@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const ws = require("ws");
 const http = require("http");
-const url = require("url");
+const cors = require("cors");
 
 const db = require("../databases/redis");
 const websocket = require("./websocket");
@@ -17,6 +17,11 @@ const wsServer = new ws.Server({ noServer: true });
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.use(user.router);
 app.use("/room", room.router);
@@ -28,14 +33,13 @@ db.connect().then(() => {
   server.listen(port, () => console.log(`Server running on port ${port}`));
 });
 
-server.on("upgrade", (request, socket, head) => {
+server.on("upgrade", async (request, socket, head) => {
   request.url = new URL(request.url, `http://${request.headers.host}`);
   try {
-    request.user = new user.model({
+    request.user = await new user.model({
       token: request.url.searchParams.get("token"),
     }).authenticate();
   } catch (err) {
-    console.log(err.message);
     socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
     socket.destroy();
     return;

@@ -32,7 +32,7 @@ class User {
   }
 
   get role() {
-    return db.get(`user:${this.username}:role`);
+    return this._data.role || db.get(`user:${this.username}:role`);
   }
 
   get rooms() {
