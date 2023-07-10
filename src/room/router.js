@@ -11,10 +11,10 @@ router.get("/create", async (req, res) => {
 });
 
 router.get("/:id/destroy", async (req, res) => {
-  if (!req.query.id)
+  if (!req.params.id)
     return res.status(400).json({ error: "room id is required" });
 
-  const room = new Room({ id: req.query.id, user: req.user });
+  const room = new Room({ id: req.params.id, user: req.user });
 
   try {
     await room.destroy();
@@ -22,7 +22,7 @@ router.get("/:id/destroy", async (req, res) => {
     return res.status(400).json({ error: err.message });
   }
 
-  return res.status(200);
+  return res.status(200).json({ success: true });
 });
 
 module.exports = router;

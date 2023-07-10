@@ -27,7 +27,7 @@ class Room {
       else throw Error("room is full, please join as a spectator");
     await db.sAdd(`room:${this._id}:participants`, this.user.username);
 
-    this.user.join(this._id);
+    await this.user.join(this._id);
   }
 
   async leave() {
@@ -70,16 +70,17 @@ class Room {
   }
 
   async destroy() {
-    if (this.creator() === this.user.username) {
-      await db
-        .multi()
-        .del(`room:${this._id}`)
-        .del(`room:${this._id}:participants`)
-        .del(`room:${this._id}:players`)
-        .del(`room:${this._id}:creator`)
-        .del(`room:${this._id}:created_at`)
-        .exec();
-    }
+    if ((await this.exists) === false) throw new Error("Room does not exist");
+    if ((await this.creator) !== this.user.username)
+      throw new Error("You are not the creator of this room");
+    await db
+      .multi()
+      .del(`room:${this._id}`)
+      .del(`room:${this._id}:participants`)
+      .del(`room:${this._id}:players`)
+      .del(`room:${this._id}:creator`)
+      .del(`room:${this._id}:created_at`)
+      .exec();
   }
 }
 
